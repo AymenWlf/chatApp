@@ -13,19 +13,19 @@ class Message
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\ManyToOne(targetEntity: conversation::class, inversedBy: 'messages')]
+    #[ORM\ManyToOne(targetEntity: Conversation::class, inversedBy: 'messages')]
     #[ORM\JoinColumn(nullable: false)]
     private $id_conversation;
-
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'messages')]
-    #[ORM\JoinColumn(nullable: false)]
-    private $id_user;
 
     #[ORM\Column(type: 'text')]
     private $content;
 
     #[ORM\Column(type: 'datetime')]
     private $created_at;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'messages')]
+    #[ORM\JoinColumn(nullable: false)]
+    private $id_user;
 
     public function getId(): ?int
     {
@@ -40,18 +40,6 @@ class Message
     public function setIdConversation(?conversation $id_conversation): self
     {
         $this->id_conversation = $id_conversation;
-
-        return $this;
-    }
-
-    public function getIdUser(): ?User
-    {
-        return $this->id_user;
-    }
-
-    public function setIdUser(?User $id_user): self
-    {
-        $this->id_user = $id_user;
 
         return $this;
     }
@@ -76,6 +64,18 @@ class Message
     public function setCreatedAt(\DateTimeInterface $created_at): self
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getIdUser(): ?User
+    {
+        return $this->id_user;
+    }
+
+    public function setIdUser(?User $id_user): self
+    {
+        $this->id_user = $id_user;
 
         return $this;
     }

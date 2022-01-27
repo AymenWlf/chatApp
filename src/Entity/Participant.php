@@ -13,32 +13,20 @@ class Participant
     #[ORM\Column(type: 'integer')]
     private $id;
 
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private $messages_read_at;
+
+    #[ORM\ManyToOne(targetEntity: Conversation::class, inversedBy: 'participants')]
+    #[ORM\JoinColumn(nullable: false)]
+    private $id_conversation;
+
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'participants')]
     #[ORM\JoinColumn(nullable: false)]
     private $id_user;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private $messages_read_at;
-
-    #[ORM\ManyToOne(targetEntity: conversation::class, inversedBy: 'participants')]
-    #[ORM\JoinColumn(nullable: false)]
-    private $id_conversation;
-
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getIdUser(): ?User
-    {
-        return $this->id_user;
-    }
-
-    public function setIdUser(?User $id_user): self
-    {
-        $this->id_user = $id_user;
-
-        return $this;
     }
 
     public function getMessagesReadAt(): ?\DateTimeInterface
@@ -61,6 +49,18 @@ class Participant
     public function setIdConversation(?conversation $id_conversation): self
     {
         $this->id_conversation = $id_conversation;
+
+        return $this;
+    }
+
+    public function getIdUser(): ?User
+    {
+        return $this->id_user;
+    }
+
+    public function setIdUser(?User $id_user): self
+    {
+        $this->id_user = $id_user;
 
         return $this;
     }
