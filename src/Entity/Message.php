@@ -6,6 +6,7 @@ use App\Repository\MessageRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MessageRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Message
 {
     #[ORM\Id]
@@ -15,7 +16,7 @@ class Message
 
     #[ORM\ManyToOne(targetEntity: Conversation::class, inversedBy: 'messages')]
     #[ORM\JoinColumn(nullable: false)]
-    private $id_conversation;
+    private $conversation;
 
     #[ORM\Column(type: 'text')]
     private $content;
@@ -25,21 +26,21 @@ class Message
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'messages')]
     #[ORM\JoinColumn(nullable: false)]
-    private $id_user;
+    private $user;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getIdConversation(): ?conversation
+    public function getConversation(): ?conversation
     {
-        return $this->id_conversation;
+        return $this->conversation;
     }
 
-    public function setIdConversation(?conversation $id_conversation): self
+    public function setConversation(?conversation $conversation): self
     {
-        $this->id_conversation = $id_conversation;
+        $this->conversation = $conversation;
 
         return $this;
     }
@@ -61,6 +62,8 @@ class Message
         return $this->created_at;
     }
 
+    
+    #[ORM\PrePersist]
     public function setCreatedAt(\DateTimeInterface $created_at): self
     {
         $this->created_at = $created_at;
@@ -68,14 +71,14 @@ class Message
         return $this;
     }
 
-    public function getIdUser(): ?User
+    public function getUser(): ?User
     {
-        return $this->id_user;
+        return $this->user;
     }
 
-    public function setIdUser(?User $id_user): self
+    public function setUser(?User $user): self
     {
-        $this->id_user = $id_user;
+        $this->user = $user;
 
         return $this;
     }

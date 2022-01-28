@@ -15,15 +15,15 @@ class Conversation
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\OneToMany(mappedBy: 'id_conversation', targetEntity: Participant::class)]
+    #[ORM\OneToMany(mappedBy: 'conversation', targetEntity: Participant::class)]
     private $participants;
 
-    #[ORM\OneToMany(mappedBy: 'id_conversation', targetEntity: Message::class)]
+    #[ORM\OneToMany(mappedBy: 'conversation', targetEntity: Message::class)]
     private $messages;
 
     #[ORM\OneToOne(targetEntity: message::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    private $last_message_id;
+    private $last_message;
 
     public function __construct()
     {
@@ -48,7 +48,7 @@ class Conversation
     {
         if (!$this->participants->contains($participant)) {
             $this->participants[] = $participant;
-            $participant->setIdConversation($this);
+            $participant->setConversation($this);
         }
 
         return $this;
@@ -58,8 +58,8 @@ class Conversation
     {
         if ($this->participants->removeElement($participant)) {
             // set the owning side to null (unless already changed)
-            if ($participant->getIdConversation() === $this) {
-                $participant->setIdConversation(null);
+            if ($participant->getConversation() === $this) {
+                $participant->setConversation(null);
             }
         }
 
@@ -78,7 +78,7 @@ class Conversation
     {
         if (!$this->messages->contains($message)) {
             $this->messages[] = $message;
-            $message->setIdConversation($this);
+            $message->setConversation($this);
         }
 
         return $this;
@@ -88,22 +88,22 @@ class Conversation
     {
         if ($this->messages->removeElement($message)) {
             // set the owning side to null (unless already changed)
-            if ($message->getIdConversation() === $this) {
-                $message->setIdConversation(null);
+            if ($message->getConversation() === $this) {
+                $message->setConversation(null);
             }
         }
 
         return $this;
     }
 
-    public function getLastMessageId(): ?message
+    public function getLastMessage(): ?message
     {
-        return $this->last_message_id;
+        return $this->last_message;
     }
 
-    public function setLastMessageId(message $last_message_id): self
+    public function setLastMessage(message $last_message): self
     {
-        $this->last_message_id = $last_message_id;
+        $this->last_message = $last_message;
 
         return $this;
     }

@@ -26,10 +26,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string')]
     private $password;
 
-    #[ORM\OneToMany(mappedBy: 'id_user', targetEntity: Participant::class)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Participant::class)]
     private $participants;
 
-    #[ORM\OneToMany(mappedBy: 'id_user', targetEntity: Message::class)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Message::class)]
     private $messages;
 
     public function __construct()
@@ -38,7 +38,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->messages = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
@@ -134,7 +134,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->participants->contains($participant)) {
             $this->participants[] = $participant;
-            $participant->setIdUser($this);
+            $participant->setUser($this);
         }
 
         return $this;
@@ -144,8 +144,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->participants->removeElement($participant)) {
             // set the owning side to null (unless already changed)
-            if ($participant->getIdUser() === $this) {
-                $participant->setIdUser(null);
+            if ($participant->getUser() === $this) {
+                $participant->setUser(null);
             }
         }
 
@@ -164,7 +164,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->messages->contains($message)) {
             $this->messages[] = $message;
-            $message->setIdUser($this);
+            $message->setUser($this);
         }
 
         return $this;
@@ -174,8 +174,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->messages->removeElement($message)) {
             // set the owning side to null (unless already changed)
-            if ($message->getIdUser() === $this) {
-                $message->setIdUser(null);
+            if ($message->getUser() === $this) {
+                $message->setUser(null);
             }
         }
 
