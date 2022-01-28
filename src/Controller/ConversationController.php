@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-#[Route('conversations',name:'conversations')]
+#[Route('conversations',name:'conversations.')]
 class ConversationController extends AbstractController
 {
     private $em;
@@ -23,12 +23,12 @@ class ConversationController extends AbstractController
         $this->em = $em;
     }
     
-    #[Route('/{id}', name: 'getConversations')]
-    public function index(Request $request,UserRepository $userRepository,int $id): Response
+    #[Route('/', name: 'newConversation',methods:['POST'])]
+    public function index(Request $request,UserRepository $userRepository,ConversationRepository $conversationRepository): Response
     {
         $currentUser = $this->getUser();
         $checkOtherUserId = $request->get('otherUser',0);
-        $otherUser = $userRepository->findOneBy(["id" => $id]);
+        $otherUser = $userRepository->findOneBy(["id" => $checkOtherUserId]);
 
         //Any user found
         if(is_null($otherUser))
@@ -43,7 +43,7 @@ class ConversationController extends AbstractController
         }
 
         //check if conversation already exists
-        $conversation =$this->em->getRepository(Conversation::class)->findByParticipants($currentUser->getId(),$otherUser->getId());//will create function later
+        $conversation =$conversationRepository->findConversationByParticipants($currentUser->getId(),$otherUser->getId());//will create function later
 
         if(count($conversation))
         {
@@ -77,11 +77,19 @@ class ConversationController extends AbstractController
             throw $e;
         }
 
-        
-
-
         return $this->json([
             'id' => $conversation->getId()
         ],Response::HTTP_CREATED);
     }
+
+    #[Route('/', name:'getConversations', methods:'GET')]
+    public function getConversations(ConversationRepository $conversationRepository):Response
+    {
+        $currentUserId = $this->getUser()->getId();
+        $conversations = $conversationRepository->findConversationsByUser($currentUserId);
+
+        dd($conversations);
+        return $this->json($conversations,Response::HTTP_CREATED);
+    }
+
 }

@@ -22,7 +22,7 @@ class Conversation
     private $messages;
 
     #[ORM\OneToOne(targetEntity: message::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private $last_message;
 
     public function __construct()

@@ -28,6 +28,8 @@ class Message
     #[ORM\JoinColumn(nullable: false)]
     private $user;
 
+    private $mine;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -79,6 +81,18 @@ class Message
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getMine(): bool
+    {
+        return $this->mine;
+    }
+
+    public function setMine(bool $mine): self
+    {
+        $this->mine = $mine;
 
         return $this;
     }
