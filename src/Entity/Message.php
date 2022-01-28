@@ -9,6 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\HasLifecycleCallbacks]
 class Message
 {
+    use Timestamp;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -21,8 +23,6 @@ class Message
     #[ORM\Column(type: 'text')]
     private $content;
 
-    #[ORM\Column(type: 'datetime')]
-    private $created_at;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'messages')]
     #[ORM\JoinColumn(nullable: false)]
@@ -55,20 +55,6 @@ class Message
     public function setContent(string $content): self
     {
         $this->content = $content;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeInterface
-    {
-        return $this->created_at;
-    }
-
-    
-    #[ORM\PrePersist]
-    public function setCreatedAt(\DateTimeInterface $created_at): self
-    {
-        $this->created_at = $created_at;
 
         return $this;
     }
