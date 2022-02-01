@@ -25,7 +25,7 @@ class ConversationVoter extends Voter
             return false;
         }
 
-        // only vote on `Post` objects
+        // only vote on `Conversation` objects
         if (!$subject instanceof Conversation) {
             return false;
         }
@@ -36,7 +36,7 @@ class ConversationVoter extends Voter
     protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool
     {
         $result = $this->conversationRepository->checkIfUserIsParticipant($subject->getId(),$token->getUser()->getId());
-        // dd($result);
+        
         return !!$result;
         throw new \LogicException('This code should not be reached!');
     }

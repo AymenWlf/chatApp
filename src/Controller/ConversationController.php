@@ -6,25 +6,43 @@ use Exception;
 use App\Entity\Participant;
 use App\Entity\Conversation;
 use App\Repository\UserRepository;
+use Symfony\Component\WebLink\Link;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\ConversationRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Mercure\Authorization;
+use Symfony\Component\Mercure\Discovery;
 
 #[Route('conversations',name:'conversations.')]
 class ConversationController extends AbstractController
 {
     private $em;
 
-    public function __construct(EntityManagerInterface $em)
+    private $conversationRepository;
+
+    public function __construct(EntityManagerInterface $em,ConversationRepository $conversationRepository)
     {
         $this->em = $em;
+        $this->conversationRepository = $conversationRepository;
     }
+
+    #[Route('/', name: 'index')]
+    public function index(): Response
+    {
+        if($this->getUser() === null)
+        {
+            new Exception("You have to be connected !");
+        }
+
+        return $this->redirectToRoute('index');
+    }
+
     
     #[Route('/', name: 'newConversation',methods:['POST'])]
-    public function index(Request $request,UserRepository $userRepository,ConversationRepository $conversationRepository): Response
+    public function newConversation(Request $request,UserRepository $userRepository): Response
     {
         $currentUser = $this->getUser();
         $checkOtherUserId = $request->get('otherUser',0);
@@ -43,7 +61,7 @@ class ConversationController extends AbstractController
         }
 
         //check if conversation already exists
-        $conversation =$conversationRepository->findConversationByParticipants($currentUser->getId(),$otherUser->getId());//will create function later
+        $conversation =$this->conversationRepository->findConversationByParticipants($currentUser->getId(),$otherUser->getId());//will create function later
 
         if(count($conversation))
         {
@@ -83,12 +101,18 @@ class ConversationController extends AbstractController
     }
 
     #[Route('/', name:'getConversations', methods:'GET')]
-    public function getConversations(ConversationRepository $conversationRepository):Response
+    public function getConversations(Request $request,Discovery $discovery,Authorization $authorization):Response
     {
         $currentUserId = $this->getUser()->getId();
-        $conversations = $conversationRepository->findConversationsByUser($currentUserId);
+        $conversations = $this->conversationRepository->findConversationsByUser($currentUserId);
 
-        dd($conversations);
+        $hubURL = $this->getParameter("mercure.default_hub");//"http://localhost:8000/.well-known/mercure"
+
+        // $discovery->addLink($request,$hubURL);
+        // dd($discovery);
+
+        $this->addLink($request,new Link('mercure',$hubURL));
+
         return $this->json($conversations,Response::HTTP_CREATED);
     }
 
