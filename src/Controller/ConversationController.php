@@ -29,16 +29,14 @@ class ConversationController extends AbstractController
         $this->conversationRepository = $conversationRepository;
     }
 
-    #[Route('/', name: 'index')]
-    public function index(): Response
-    {
-        if($this->getUser() === null)
-        {
-            new Exception("You have to be connected !");
-        }
-
-        return $this->redirectToRoute('index');
-    }
+    // #[Route('/', name: 'index')]
+    // public function index()
+    // {
+    //     if($this->getUser() === null)
+    //     {
+    //         new Exception("You have to be connected !");
+    //     }
+    // }
 
     
     #[Route('/', name: 'newConversation',methods:['POST'])]
@@ -112,6 +110,7 @@ class ConversationController extends AbstractController
         // dd($discovery);
 
         $this->addLink($request,new Link('mercure',$hubURL));
+        dd($conversations);
 
         return $this->json($conversations,Response::HTTP_CREATED);
     }
